@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Tỏ Tình 💗</title>
+<style>
+body{
+    margin:0;
+    font-family:'Comic Sans MS', cursive;
+    background: linear-gradient(135deg,#ffb6d9,#ffcce6,#ffe6f2);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    overflow:hidden;
+    text-align:center;
+}
+
+.container{
+    background:white;
+    padding:40px;
+    border-radius:25px;
+    box-shadow:0 15px 40px rgba(0,0,0,0.25);
+    z-index:2;
+}
+
+h1{
+    color:#ff4da6;
+    min-height:60px;
+}
+
+button{
+    padding:12px 28px;
+    border:none;
+    border-radius:30px;
+    font-size:18px;
+    cursor:pointer;
+    margin:10px;
+    transition:0.3s;
+}
+
+.yes{
+    background:#ff4da6;
+    color:white;
+}
+
+.no{
+    background:#ff99cc;
+    color:white;
+}
+
+button:hover{
+    transform:scale(1.15);
+}
+
+#overlay{
+    position:fixed;
+    inset:0;
+    background:black;
+    opacity:0;
+    pointer-events:none;
+    transition:1s;
+    z-index:3;
+}
+
+canvas{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:4;
+}
+
+/* Hearts */
+.heart{
+    position:fixed;
+    color:#ff4da6;
+    font-size:20px;
+    animation:floatUp linear infinite;
+    z-index:1;
+}
+
+@keyframes floatUp{
+    from{
+        transform:translateY(100vh) scale(0.5);
+        opacity:1;
+    }
+    to{
+        transform:translateY(-10vh) scale(1.3);
+        opacity:0;
+    }
+}
+
+/* Love text */
+.love-text{
+    position:fixed;
+    color:#ff66b2;
+    font-size:24px;
+    font-weight:bold;
+    animation:spin 6s linear infinite;
+    z-index:5;
+}
+
+@keyframes spin{
+    from{ transform:rotate(0deg) translateX(200px) rotate(0deg); }
+    to{ transform:rotate(360deg) translateX(200px) rotate(-360deg); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1 id="text"></h1>
+    <div id="buttons" style="display:none;">
+        <button class="yes" onclick="accept()">Đồng Ý Làm Người Yêu Tớ? 👉👈</button>
+        <button class="no" onclick="reject()">Không</button>
+    </div>
+</div>
+
+<div id="overlay"></div>
+<canvas id="fireworks"></canvas>
+
+<script>
+/* Typing text */
+let message = "Mình thích cậu 💗";
+let i = 0;
+function typeEffect(){
+    if(i < message.length){
+        document.getElementById("text").innerHTML += message.charAt(i);
+        i++;
+        setTimeout(typeEffect,100);
+    } else {
+        document.getElementById("buttons").style.display="block";
+    }
+}
+typeEffect();
+
+function reject(){
+    alert("Chọn lại đi mà 🥹");
+}
+
+/* Hearts effect */
+function createHeart(){
+    let heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerHTML = "❤️";
+    heart.style.left = Math.random()*100 + "vw";
+    heart.style.animationDuration = (3 + Math.random()*3) + "s";
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),6000);
+}
+setInterval(createHeart,300);
+
+/* Fireworks */
+let canvas = document.getElementById("fireworks");
+let ctx = canvas.getContext("2d");
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+let particles = [];
+
+function rand(min,max){ return Math.random()*(max-min)+min; }
+
+function createFirework(){
+    let x = rand(100,canvas.width-100);
+    let y = rand(100,canvas.height-100);
+    for(let i=0;i<200;i++){
+        particles.push({
+            x,y,
+            r:2,
+            c:`hsl(${rand(0,360)},100%,60%)`,
+            sx:rand(-7,7),
+            sy:rand(-7,7),
+            life:120
+        });
+    }
+}
+
+function update(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach((p,i)=>{
+        p.x+=p.sx;
+        p.y+=p.sy;
+        p.life--;
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle=p.c;
+        ctx.fill();
+        if(p.life<=0) particles.splice(i,1);
+    });
+}
+
+function startFireworks(){
+    let fw = setInterval(createFirework,400);
+    let ani = setInterval(update,30);
+    setTimeout(()=>{
+        clearInterval(fw);
+        clearInterval(ani);
+    },15000);
+}
+
+/* Love text spin */
+function showLoveText(){
+    for(let i=0;i<6;i++){
+        let txt = document.createElement("div");
+        txt.className="love-text";
+        txt.innerText="mìn thít cậu nhieu lem😍🫶";
+        txt.style.top="50%";
+        txt.style.left="50%";
+        txt.style.animationDelay=(i*0.3)+"s";
+        document.body.appendChild(txt);
+    }
+}
+
+function accept(){
+    document.getElementById("overlay").style.opacity="0.85";
+    startFireworks();
+    showLoveText();
+}
+</script>
+
+</body>
+</html>
